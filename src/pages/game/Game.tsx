@@ -13,6 +13,8 @@ import { setStart } from "~/redux/slice/sessionSlice";
 const Game = (): ReactElement => {
   const [board, setBoard] = useState<Array<SquareValue>>(Array(9).fill(null));
   const [xIsNext, setXIsNext] = useState<boolean>(true);
+  const [win, setWin] = useState<boolean>(false);
+  const [count, setCount] = useState<number>(0);
   const players = useSelector(getPlayers);
   const dispatch = useDispatch();
   const player1 = players[0].name;
@@ -58,21 +60,33 @@ const Game = (): ReactElement => {
     setXIsNext(!xIsNext);
   };
 
-  const determineStatus = (): string => {
+  const determineStatus = (): { status: boolean; label: string } => {
     const winner = calculateWinner(board);
     const isDraw = isBoardFull(board) && !winner;
 
     if (winner) {
-      return `Winner: ${winner === "X" ? player1 : player2}`;
+      return {
+        label: `Winner: ${winner === "X" ? player1 : player2}`,
+        status: true,
+      };
     } else if (isDraw) {
-      return "It's a draw!";
+      return {
+        label: "It's a draw!",
+        status: true,
+      };
     } else {
-      return `${xIsNext ? player1 : player2}'s turn`;
+      return {
+        label: `${xIsNext ? player1 : player2}'s turn`,
+        status: false,
+      };
     }
   };
 
   useEffect(() => {
     determineStatus();
+    if (determineStatus().status) {
+      setWin(true);
+    }
   }, [board, xIsNext, player1, player2]);
 
   const handleReset = (): void => {
@@ -80,6 +94,10 @@ const Game = (): ReactElement => {
     setBoard(Array(9).fill(null));
     // Reset the turn to player1
     setXIsNext(true);
+    setWin(false);
+    if (win) {
+      setCount(count + 1);
+    }
   };
 
   const handleExit = (): void => {
@@ -88,7 +106,10 @@ const Game = (): ReactElement => {
 
   return (
     <div className="board">
-      <h2 className="status">{determineStatus()}</h2>
+      <div className="header-game">
+        <h2 className="status">{determineStatus().label}</h2>
+        <h2 className="status">{`Round: ${count}`}</h2>
+      </div>
       <Board squares={board} onClick={handleClick} />
       <div className="footer">
         <Button type="button" onClick={handleReset}>

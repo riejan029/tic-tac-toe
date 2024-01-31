@@ -130,7 +130,6 @@ html {
 }
 
 .board {
-  border: solid 1px red;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -173,6 +172,13 @@ html {
 
 .status {
   font-weight: 900;
+}
+
+.header-game {
+  display: flex;
+  flex-direction: row;
+  width: 30rem;
+  justify-content: space-around;
 }
 
 @media only screen and (max-width: 1366px) {
