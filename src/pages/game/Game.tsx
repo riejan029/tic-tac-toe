@@ -6,11 +6,15 @@ import { useState, useEffect } from "react";
 import Board from "./board/Board";
 import { useSelector } from "react-redux";
 import { getPlayers } from "~/redux/slice/playerSlice";
+import Button from "~/components/button";
+import { useDispatch } from "react-redux";
+import { setStart } from "~/redux/slice/sessionSlice";
 
 const Game = (): ReactElement => {
   const [board, setBoard] = useState<Array<SquareValue>>(Array(9).fill(null));
   const [xIsNext, setXIsNext] = useState<boolean>(true);
   const players = useSelector(getPlayers);
+  const dispatch = useDispatch();
   const player1 = players[0].name;
   const player2 = players[1].name;
   const calculateWinner = (squares: SquareValue[]): SquareValue => {
@@ -71,10 +75,29 @@ const Game = (): ReactElement => {
     determineStatus();
   }, [board, xIsNext, player1, player2]);
 
+  const handleReset = (): void => {
+    // Reset the board
+    setBoard(Array(9).fill(null));
+    // Reset the turn to player1
+    setXIsNext(true);
+  };
+
+  const handleExit = (): void => {
+    dispatch(setStart(false));
+  };
+
   return (
     <div className="board">
-      <div className="status">{determineStatus()}</div>
+      <h2 className="status">{determineStatus()}</h2>
       <Board squares={board} onClick={handleClick} />
+      <div className="footer">
+        <Button type="button" onClick={handleReset}>
+          Continue
+        </Button>
+        <Button type="button" onClick={handleExit}>
+          Exit
+        </Button>
+      </div>
     </div>
   );
 };
