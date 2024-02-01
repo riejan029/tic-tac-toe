@@ -1,7 +1,5 @@
 import type { ReactElement } from "react";
 
-import { useEffect } from "react";
-
 import Title from "~/components/title/Title";
 import History from "./components/history";
 import Start from "./components/start";
@@ -11,10 +9,6 @@ import { getSession } from "~/redux/slice/sessionSlice";
 
 const Homepage = (): ReactElement => {
   const startGame = useSelector(getSession).start;
-  useEffect(() => {
-    console.log(startGame);
-  }, [startGame]);
-
   return (
     <>
       {startGame ? (

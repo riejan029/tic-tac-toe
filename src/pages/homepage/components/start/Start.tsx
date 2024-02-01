@@ -2,17 +2,21 @@ import type { ChangeEvent, ReactElement } from "react";
 
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { addPlayers } from "~/api/api";
+import { PlayersParams } from "~/api/types";
 import Button from "~/components/button";
+import Loading from "~/components/loading";
 
 import Modal from "~/components/modal/Modal";
 import TextField from "~/components/text-field";
-import { PlayerObject, setPlayers } from "~/redux/slice/playerSlice";
+import { setSession } from "~/redux/slice/playerSlice";
 import { setStart } from "~/redux/slice/sessionSlice";
 import { PLAYER_CODE } from "~/utils/contants";
 
 const Start = (): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { player1, player2 } = PLAYER_CODE;
 
   const dispatch = useDispatch();
@@ -44,6 +48,7 @@ const Start = (): ReactElement => {
       setError(true);
       return;
     }
+    setIsLoading(true);
 
     const constantData = {
       numberOfWins: 0,
@@ -51,13 +56,24 @@ const Start = (): ReactElement => {
       numberOfDraws: 0,
     };
 
-    const players: PlayerObject[] = [
-      { name: p1, position: player1, ...constantData },
-      { name: p2, position: player2, ...constantData },
-    ];
-    dispatch(setPlayers(players));
-    dispatch(setStart(true));
-    setOpen(false);
+    const players: PlayersParams = {
+      players: [
+        { name: p1, position: player1, ...constantData },
+        { name: p2, position: player2, ...constantData },
+      ],
+    };
+
+    addPlayers(players)
+      .then((player) => {
+        dispatch(setSession(player));
+        dispatch(setStart(true));
+        setOpen(false);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setOpen(true);
+        dispatch(setStart(false));
+      });
   };
 
   return (
@@ -84,11 +100,11 @@ const Start = (): ReactElement => {
           <div className="error-message">Please input players name... </div>
         )}
         <div className="action-button">
-          <Button type="button" onClick={handleCancel}>
+          <Button type="button" onClick={handleCancel} disabled={isLoading}>
             Cancel
           </Button>
-          <Button type="button" onClick={handleSubmit}>
-            Submit
+          <Button type="button" onClick={handleSubmit} disabled={isLoading}>
+            {isLoading ? <Loading /> : "Submit"}
           </Button>
         </div>
       </Modal>

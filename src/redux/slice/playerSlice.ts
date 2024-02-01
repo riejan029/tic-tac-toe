@@ -1,28 +1,24 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../types";
+import type { PlayerResponse } from "~/api/types";
 
-type PlayerPosition = "p1" | "p2";
-export interface PlayerObject {
-  name: string;
-  numberOfWins: number;
-  numberOfLoss: number;
-  numberOfDraws: number;
-  position: PlayerPosition;
-}
-
-const initialValue: PlayerObject[] = [];
+export const initialValue: PlayerResponse = {
+  sessionId: "",
+  players: [],
+};
 
 const playerSlice = createSlice({
   name: "playerSlice",
   initialState: initialValue,
   reducers: {
-    setPlayers: (state, action): void => {
-      state.splice(0, state.length, ...action.payload);
+    setSession: (state, action: PayloadAction<PlayerResponse>): void => {
+      state.players = action.payload.players;
+      state.sessionId = action.payload.sessionId;
     },
   },
 });
 
-export const getPlayers = (state: RootState): PlayerObject[] => state.players;
+export const getSession = (state: RootState): PlayerResponse => state.players;
 
-export const { setPlayers } = playerSlice.actions;
+export const { setSession } = playerSlice.actions;
 export default playerSlice.reducer;
