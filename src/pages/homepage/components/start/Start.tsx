@@ -12,6 +12,7 @@ import { PLAYER_CODE } from "~/utils/contants";
 
 const Start = (): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
   const { player1, player2 } = PLAYER_CODE;
 
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ const Start = (): ReactElement => {
 
   const handleCancel = (): void => {
     setOpen(false);
+    setError(false);
   };
 
   const [p1, setP1] = useState<string>("");
@@ -38,6 +40,11 @@ const Start = (): ReactElement => {
   };
 
   const handleSubmit = (): void => {
+    if (p1 === "" || p2 === "") {
+      setError(true);
+      return;
+    }
+
     const constantData = {
       numberOfWins: 0,
       numberOfLoss: 0,
@@ -59,14 +66,7 @@ const Start = (): ReactElement => {
         Start
       </button>
       <Modal open={open} onClose={handleCloseModal}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-            gap: "1rem",
-          }}
-        >
+        <div className="player-modal">
           <TextField
             id="player 1"
             placeholder="Enter player 1"
@@ -80,7 +80,9 @@ const Start = (): ReactElement => {
             value={p2}
           />
         </div>
-
+        {error && (
+          <div className="error-message">Please input players name... </div>
+        )}
         <div className="action-button">
           <Button type="button" onClick={handleCancel}>
             Cancel

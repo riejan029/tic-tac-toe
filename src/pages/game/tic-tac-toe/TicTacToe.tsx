@@ -104,7 +104,7 @@ const TicTacToe = (): ReactElement => {
     dispatch(setStart(false));
   };
   return (
-    <>
+    <div className="game-wrapper">
       <div className="header-game">
         <h2 className="status">{determineStatus().label}</h2>
         <h2 className="status">{`Round: ${count}`}</h2>
@@ -118,7 +118,7 @@ const TicTacToe = (): ReactElement => {
           Exit
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 
